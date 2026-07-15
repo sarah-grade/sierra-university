@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "files": {
+    "tools/prebuilt.ts": "// Copyright Sierra\n\nimport { fetch, toolParam, tools } from \"@sierra/agent\";\n\n/**\n * Adding our first tool! We're actually adding this because we want to demonstrate to the\n * day 1 folks what it's like to have a tool already created by engineering and ready to use.\n */\ntype LoyaltyInfo = {\n    id: string;\n    customer_id: string;\n    tier: string;\n    points_balance: number;\n    lifetime_points: number;\n    tier_expires_at?: string;\n    created_at: string;\n};\n\ntype LoyaltyResponse = {\n    success: boolean;\n    data: LoyaltyInfo;\n};\n\ntools.registerTool({\n    name: \"PreBuiltGetLoyaltyInfo\",\n    type: \"lookup\",\n    noCodeId: \"pre-built-get-loyalty-info\",\n    description: \"Get information about the Sierra Explorers loyalty program for a given customer\",\n    params: {\n        customerId: toolParam.string(\n            \"The username or email of the customer we want to get loyalty information for. This must be a valid customer ID and not something generic like 'customer' or 'user'\"\n        ),\n    },\n    func: (ctx, params, controls) => {\n        const result = fetch.jsonSync<LoyaltyResponse>(\n            `https://gosierra.biz/api/v1/customers/${params.customerId}/loyalty`,\n            { method: \"GET\", headers: { \"X-API-Key\": \"sierra_u\" } }\n        );\n        if (result.status !== 200 || !result.body) {\n            return controls.error(\"Failed to get loyalty information\");\n        }\n        return controls.result({\n            data: { loyaltyInfo: result.body.data },\n        });\n    },\n});\n"
+  },
+  "registeredTools": {
+    "pre-built-get-loyalty-info": {
+      "entryPath": "tools/prebuilt.ts",
+      "filePaths": [
+        "tools/prebuilt.ts"
+      ],
+      "externalImports": [],
+      "lazyModuleIds": []
+    }
+  }
+}
