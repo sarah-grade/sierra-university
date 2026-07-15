@@ -1,0 +1,13 @@
+packages:
+  - "."
+  - "web"
+
+blockExoticSubdeps: false
+
+# pnpm 10.x
+onlyBuiltDependencies:
+  - esbuild
+
+# pnpm 11.x
+allowBuilds:
+  esbuild: true
